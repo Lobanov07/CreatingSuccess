@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}
+  Страница пользователя {{ profile.username }}
+{% endblock %}
+{% block content %}
+<style>
+    .container {
+      display: flex; /* Используем Flexbox для двухколоночного макета */
+      gap: 20px; /* Промежуток между колонками */
+    }
+
+    .profile-container, .posts-container {
+      flex: 1; /* Позволяет контейнерам занимать равное пространство */
+      max-width: 600px; /* Максимальная ширина для контейнеров */
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background-color: #f9f9f9;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .profile-container h1, .posts-container h3 {
+      text-align: center;
+      color: #333;
+      margin: 0 0 20px; /* Отступ снизу */
+    }
+
+    .profile-picture {
+      display: block;
+      margin: 0 auto 20px;
+      width: 150px; /* Задаем фиксированную ширину */
+      height: 150px; /* Задаем фиксированную высоту */
+      border-radius: 50%; /* Круглая форма */
+      object-fit: cover; /* Обрезаем изображение, сохраняя пропорции */
+    }
+
+    .profile-info {
+      margin-bottom: 15px;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    .profile-info strong {
+      color: #555;
+    }
+
+    .edit-profile-link {
+      display: block;
+      text-align: center;
+      margin-top: 20px;
+      font-size: 18px;
+      color: #007bff;
+      text-decoration: none;
+    }
+
+    .edit-profile-link:hover {
+      text-decoration: underline;
+    }
+
+    .post-container {
+      display: none; /* Скрываем все посты по умолчанию */
+      
+    }
+
+    .post-container img {
+        max-width: 100%; /* Ограничиваем ширину изображения */
+        height: auto; /* Высота автоматически */
+        display: block;
+        margin: 0 auto; /* Центрируем изображение */
+      }
+
+    .active {
+      display: block; /* Показываем только активный пост */
+    }
+
+    .navigation-buttons {
+      text-align: center;
+      margin-top: 20px;
+    }
+</style>
+
+<div class="container">
+  <div class="profile-container">
+    <h1>Страница пользователя {{ profile.username }}</h1>
+
+    {% if profile.profile_picture %}
+      <img src="{{ profile.profile_picture.url }}" alt="Фото профиля" class="profile-picture">
+    {% else %}
+      <img src="{% static 'img/no_photo.png' %}" alt="Фото профиля по умолчанию" class="profile-picture">
+    {% endif %}
+
+    <div class="profile-info">
+      <p><strong>Имя:</strong> {{ profile.first_name }} {{ profile.last_name }}</p>
+      <p><strong>О себе:</strong> {{ profile.bio }}</p>
+      <p><strong>Дата рождения:</strong> {{ profile.date_of_birth }}</p>
+      <p><strong>Телефон:</strong> {{ profile.phone_number }}</p>
+      <p><strong>Дата создания профиля:</strong> {{ profile.created_at }}</p>
+      <p><strong>Последнее обновление:</strong> {{ profile.updated_at }}</p>
+    </div>
+
+    {% if user.is_authenticated and user == profile %}
+    <a href="{% url 'Profile:edit_profile' profile.username %}" class="edit-profile-link">Редактировать профиль</a>
+    <a href="{% url 'Blog:create_post' %}" class="edit-profile-link">Создать пост</a>
+    {% endif %}
+  </div>
+
+  <div class="posts-container">
+    <h3>Публикации пользователя</h3>
+    <div id="posts-container">
+      {% for post in page_obj %}
+        <article class="post-container {% if forloop.first %}active{% endif %}">
+          {% include "includes/post_card.html" %}
+        </article>
+      {% endfor %}
+    </div>
+
+    <div class="navigation-buttons">
+      <button id="prev-button" onclick="changePost(-1)">Назад</button>
+      <button id="next-button" onclick="changePost(1)">Вперед</button>
+    </div>
+  </div>
+</div>
+
+<script>
+    let currentPostIndex = 0;
+    const posts = document.querySelectorAll('.post-container');
+
+    function changePost(direction) {
+        posts[currentPostIndex].classList.remove('active');
+
+        currentPostIndex += direction;
+
+        if (currentPostIndex < 0) {
+            currentPostIndex = posts.length - 1; // Переход к последнему посту
+        } else if (currentPostIndex >= posts.length) {
+            currentPostIndex = 0; // Переход к первому посту
+        }
+
+        posts[currentPostIndex].classList.add('active');
+    }
+</script>
+
+{% include "includes/paginator.html" %}
+{% endblock %}

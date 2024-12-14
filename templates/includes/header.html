@@ -1,0 +1,97 @@
+{% load static %}
+<style>
+  .custom-link {
+    color: #000000 !important; /* Чёрный цвет для ссылок */
+    text-decoration: none; /* Убираем подчеркивание */
+    padding: 10px; /* Добавляем отступы для удобства */
+    transition: background-color 0.3s, color 0.3s; /* Плавный переход */
+  }
+
+  .custom-link:hover {
+    color: #ffffff; /* Белый цвет текста при наведении */
+    background-color: #333333 !important; /* Темный фон при наведении */
+  }
+
+  .custom-link.active, .custom-link:focus {
+    color: #ffffff; /* Белый цвет текста при активном состоянии */
+    background-color: #A57BCA !important; /* Светло-фиолетовый фон при активном состоянии */
+  }
+
+  .custom-link:visited {
+    color: #000000 !important; /* Чёрный цвет для посещённых ссылок */
+  }
+
+  .btn-custom {
+    color: #000000; /* Чёрный цвет для кнопок */
+    background-color: transparent; /* Прозрачный фон для кнопок по умолчанию */
+    border-color: #000000; /* Чёрная рамка */
+    margin-right: 10px; /* Отступ справа между кнопками */
+    margin-bottom: 5px; /* Отступ снизу между кнопками */
+    transition: background-color 0.3s, color 0.3s; /* Плавный переход */
+    width: 100px; /* Задайте одинаковую ширину для всех кнопок */
+    height: 45px; /* Задайте одинаковую высоту для всех кнопок */
+    display: flex; /* Используем flex для центрирования текста */
+    align-items: center; /* Выравнивание по вертикали */
+    justify-content: center; /* Выравнивание по горизонтали */
+  }
+
+  .btn-custom:hover {
+    color: #ffffff; /* Белый цвет текста при наведении */
+    background-color: #333333; /* Темный фон при наведении */
+  }
+
+  .btn-custom.active, .btn-custom:focus {
+    color: #ffffff; /* Белый цвет текста для активной кнопки */
+    background-color: #A57BCA; /* Светло-фиолетовый фон для активной кнопки */
+  }
+</style>
+<header>
+  <nav class="navbar navbar-light" style="background-color: #C062D3">
+    <div class="container">
+      <a class="navbar-brand" href="{% url 'Pages:index' %}">
+        <img src="{% static 'img/logo.png' %}" width="30" height="30" class="d-inline-block align-top" alt="">
+        Creating Success
+      </a>
+      {% with request.resolver_match.view_name as view_name %}
+        <ul class="nav nav-pills">
+          <li class="nav-item">
+            <a class="nav-link custom-link {% if view_name == 'Pages:about' %} active {% endif %}" href="{% url 'Pages:about' %}">
+              О проекте
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link custom-link {% if view_name == 'Pages:rules' %} active {% endif %}" href="{% url 'Pages:rules' %}">
+              Правила
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link custom-link {% if view_name == 'Blog:category_list' %} active {% endif %}" href="{% url 'Blog:category_list' %}">
+              Категории
+            </a>
+          </li>
+          {% if user.is_authenticated %}
+          <li class="nav-item">
+            <a class="nav-link custom-link {% if view_name == 'Profile:view_profile' %} active {% endif %}" href="{% url 'Profile:view_profile' user.username%}">
+              Профиль
+            </a>
+          </li>
+          {% endif %}
+          <div class="btn-group" role="group" aria-label="Basic outlined example">
+            {% if user.is_authenticated %}
+              <form action="{% url 'logout' %}" target="_self">
+                <button class="btn btn-outline-dark btn-custom" type="submit">Выйти</button>
+              </form>
+            {% else %}
+              <form action="{% url 'login' %}" target="_self">
+                <button class="btn btn-outline-dark btn-custom" type="submit">Войти</button>
+              </form>
+              <form action="{% url 'registration' %}" target="_self">
+                <button class="btn btn-outline-dark btn-custom" type="submit">Регистрация</button>
+              </form>
+            {% endif %}
+          </div>
+        </ul>
+      {% endwith %}
+    </div>
+  </nav>
+</header>

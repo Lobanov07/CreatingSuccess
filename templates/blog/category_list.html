@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}
+  Все категории
+{% endblock %}
+
+{% block content %}
+<style>
+    .category-list {
+        list-style-type: none; 
+        padding: 0;
+    }
+    
+    .category-item {
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 15px;
+        margin-bottom: 15px;
+        transition: box-shadow 0.3s;
+    }
+    
+    .category-item:hover {
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+    
+    .category-link {
+        text-decoration: none;
+        color: #007bff;
+    }
+    
+    .category-link:hover {
+        text-decoration: underline;
+    }
+
+    .search-form {
+        margin-bottom: 20px;
+    }
+
+    .paginator {
+        margin-top: 20px;
+    }
+</style>
+
+<form method="get" action="" class="search-form">
+    <input type="text" name="search" value="{{ search_query }}" placeholder="Поиск по категории..." />
+    <button type="submit">Поиск</button>
+</form>
+
+
+<ul class="category-list">
+    {% for category in categories %}
+    <li class="category-item">
+        <h2>{{ category.title }}</h2>
+        <p>{{ category.description }}</p>
+        <a class="category-link" href="{% url 'Blog:category_posts' category.slug %}">Узнать больше</a>
+    </li>
+    {% empty %}
+    <li class="category-item">Нет доступных категорий.</li>
+    {% endfor %}
+</ul>
+{% include "includes/paginator.html" %}
+{% endblock %}
